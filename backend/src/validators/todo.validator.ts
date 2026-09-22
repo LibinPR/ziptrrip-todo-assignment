@@ -1,5 +1,13 @@
 import { z } from "zod";
 
+const prioritySchema = z.enum(["LOW", "MEDIUM", "HIGH"]);
+
+const dueDateSchema = z
+  .string()
+  .datetime()
+  .nullable()
+  .optional();
+
 export const createTodoSchema = z.object({
   title: z
     .string()
@@ -13,18 +21,11 @@ export const createTodoSchema = z.object({
     .max(1000, "Description must not exceed 1000 characters")
     .optional(),
 
-  completed: z
-    .boolean()
-    .optional(),
+  completed: z.boolean().optional(),
 
-  priority: z
-    .enum(["LOW", "MEDIUM", "HIGH"])
-    .optional(),
+  priority: prioritySchema.optional(),
 
-  dueDate: z
-    .string()
-    .datetime()
-    .optional(),
+  dueDate: dueDateSchema,
 });
 
 export const updateTodoSchema = createTodoSchema
@@ -32,6 +33,7 @@ export const updateTodoSchema = createTodoSchema
   .refine(
     (data) => Object.keys(data).length > 0,
     {
-      message: "At least one field must be provided for update",
+      message:
+        "At least one field must be provided for update",
     },
   );

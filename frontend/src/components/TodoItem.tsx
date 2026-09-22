@@ -6,24 +6,86 @@ import {
 } from "lucide-react";
 import type { Todo } from "../types/todo";
 
+import "./TodoItem.css";
+
 interface TodoItemProps {
   todo: Todo;
   onToggle: (todo: Todo) => void;
   onDelete: (id: number) => void;
 }
 
-function formatDueDate(date: string | null) {
+function formatDueDate(date: string | null, completed: boolean) {
   if (!date) {
     return null;
   }
 
   const dueDate = new Date(date);
 
-  return dueDate.toLocaleDateString(undefined, {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
+  // The backend stores the selected date at noon UTC.
+  // Using UTC components prevents the displayed date from
+  // shifting because of the user's local timezone.
+  const year = dueDate.getUTCFullYear();
+  const month = dueDate.getUTCMonth();
+  const day = dueDate.getUTCDate();
+
+  const dueDay = new Date(year, month, day);
+
+  if (completed) {
+    return {
+      label: `Completed ${dueDay.toLocaleDateString(undefined, {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      })}`,
+      status: "completed",
+    };
+  }
+
+  const today = new Date();
+  const todayDay = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate(),
+  );
+
+  const differenceInDays = Math.round(
+    (dueDay.getTime() - todayDay.getTime()) /
+      (1000 * 60 * 60 * 24),
+  );
+
+  if (differenceInDays < 0) {
+    return {
+      label: `Overdue · ${dueDay.toLocaleDateString(undefined, {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      })}`,
+      status: "overdue",
+    };
+  }
+
+  if (differenceInDays === 0) {
+    return {
+      label: "Due today",
+      status: "today",
+    };
+  }
+
+  if (differenceInDays === 1) {
+    return {
+      label: "Due tomorrow",
+      status: "tomorrow",
+    };
+  }
+
+  return {
+    label: `Due ${dueDay.toLocaleDateString(undefined, {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    })}`,
+    status: "upcoming",
+  };
 }
 
 function TodoItem({
@@ -35,7 +97,7 @@ function TodoItem({
     window.location.href = `/todo.html?id=${todo.id}`;
   };
 
-  const dueDate = formatDueDate(todo.dueDate);
+  const dueDate = formatDueDate(todo.dueDate, todo.completed);
 
   return (
     <article
@@ -77,12 +139,12 @@ function TodoItem({
           )}
 
           {dueDate && (
-            <div className="todo-item__meta">
+            <div
+              className={`todo-item__meta todo-item__meta--${dueDate.status}`}
+            >
               <CalendarClock size={14} />
 
-              <span>
-                {todo.completed ? "Completed" : "Due"} {dueDate}
-              </span>
+              <span>{dueDate.label}</span>
             </div>
           )}
         </div>

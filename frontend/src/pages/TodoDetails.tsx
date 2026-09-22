@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   ArrowLeft,
-  CalendarDays,
+  // CalendarDays,
   Check,
   Edit3,
   Save,
@@ -31,6 +31,50 @@ function formatDateTime(value: string) {
     minute: "2-digit",
   });
 }
+
+function getDueDateStatus(
+  dueDate: string | null,
+  completed: boolean,
+) {
+  if (!dueDate) {
+    return "none";
+  }
+
+  if (completed) {
+    return "completed";
+  }
+
+  const date = new Date(dueDate);
+
+  const year = date.getUTCFullYear();
+  const month = date.getUTCMonth();
+  const day = date.getUTCDate();
+
+  const dueDay = new Date(year, month, day);
+
+  const today = new Date();
+  const todayDay = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate(),
+  );
+
+  const differenceInDays = Math.round(
+    (dueDay.getTime() - todayDay.getTime()) /
+      (1000 * 60 * 60 * 24),
+  );
+
+  if (differenceInDays < 0) {
+    return "overdue";
+  }
+
+  if (differenceInDays === 0) {
+    return "today";
+  }
+
+  return "upcoming";
+}
+
 
 function TodoDetails() {
   const [todo, setTodo] = useState<Todo | null>(null);
@@ -90,7 +134,7 @@ function TodoDetails() {
         priority,
         dueDate: dueDate
           ? `${dueDate}T12:00:00.000Z`
-          : undefined,
+          : null,
       });
 
       setTodo(updatedTodo);
@@ -156,6 +200,11 @@ function TodoDetails() {
   if (!todo) {
     return null;
   }
+
+    const dueDateStatus = getDueDateStatus(
+    todo.dueDate,
+    todo.completed,
+  );
 
   return (
     <div className="todo-details-shell">
@@ -306,7 +355,9 @@ function TodoDetails() {
                     Due date
                   </span>
 
-                  <span className="todo-details__value">
+                  <span
+                    className={`todo-details__value todo-details__value--due-${dueDateStatus}`}
+                  >
                     {todo.dueDate
                       ? formatDate(todo.dueDate)
                       : "No due date"}
@@ -357,13 +408,15 @@ function TodoDetails() {
                     : "Mark complete"}
                 </button>
 
-                <button
-                  className="todo-details__button todo-details__button--primary"
-                  onClick={() => setEditing(true)}
-                >
-                  <Edit3 size={15} />
-                  Edit task
-                </button>
+                {!todo.completed && (
+                  <button
+                    className="todo-details__button todo-details__button--primary"
+                    onClick={() => setEditing(true)}
+                  >
+                    <Edit3 size={15} />
+                    Edit task
+                  </button>
+                )}
               </div>
             </>
           )}

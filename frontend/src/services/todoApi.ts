@@ -21,7 +21,7 @@ interface UpdateTodoInput {
   description?: string;
   completed?: boolean;
   priority?: Priority;
-  dueDate?: string;
+  dueDate?: string | null;
 }
 
 export async function getTodos(): Promise<Todo[]> {

@@ -1,7 +1,9 @@
 .todo-form {
   overflow: hidden;
+
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
+
   background: var(--color-surface);
   box-shadow: var(--shadow-sm);
 
@@ -13,43 +15,62 @@
 }
 
 .todo-form:focus-within {
-  border-color: #c7d2fe;
-  box-shadow: 0 8px 30px rgba(49, 94, 251, 0.08);
+  border-color: var(--color-primary-border);
+
+  box-shadow:
+    0 0 0 3px var(--color-primary-soft),
+    var(--shadow-md);
 }
 
+/* --------------------------------
+   Main composer
+   -------------------------------- */
+
 .todo-form__main {
-  padding: 20px 20px 12px;
+  padding: 22px 20px 14px;
 }
 
 .todo-form__title,
 .todo-form__description {
   width: 100%;
+
   border: 0;
   outline: none;
+
   background: transparent;
   color: var(--color-text);
 }
 
 .todo-form__title {
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 650;
+  line-height: 1.4;
 }
 
 .todo-form__title::placeholder {
-  color: #98a2b3;
+  color: var(--color-muted);
+  opacity: 0.75;
 }
 
 .todo-form__description {
-  margin-top: 10px;
-  resize: vertical;
   min-height: 42px;
-  color: var(--color-muted);
+
+  margin-top: 10px;
+
+  resize: vertical;
+
+  color: var(--color-text-secondary);
+
   line-height: 1.5;
 }
 
 .todo-form__description::placeholder {
-  color: #a6afbd;
+  color: var(--color-placeholder);
 }
+
+/* --------------------------------
+   Footer
+   -------------------------------- */
 
 .todo-form__footer {
   display: flex;
@@ -59,8 +80,9 @@
 
   padding: 12px 16px;
 
-  border-top: 1px solid #f0f1f4;
-  background: #fafbfc;
+  border-top: 1px solid var(--color-border);
+
+  background: var(--color-surface-soft);
 }
 
 .todo-form__options {
@@ -81,57 +103,95 @@
   gap: 4px;
 
   color: var(--color-muted);
+
   font-size: 12px;
   font-weight: 600;
 }
 
+/* --------------------------------
+   Select / date
+   -------------------------------- */
+
 .todo-form__field select,
 .todo-form__field input {
-  border: 0;
+  border: 1px solid transparent;
   outline: none;
-  border-radius: 7px;
+  border-radius: var(--radius-sm);
+
   padding: 6px 8px;
 
-  background: white;
+  background: var(--color-surface);
   color: var(--color-text);
 
   font-size: 13px;
 
   transition:
+    border-color var(--transition-fast),
     box-shadow var(--transition-fast),
     background var(--transition-fast);
 }
 
+.todo-form__field select:hover,
+.todo-form__field input:hover {
+  border-color: var(--color-border);
+  background: var(--color-surface);
+}
+
 .todo-form__field select:focus,
 .todo-form__field input:focus {
-  box-shadow: 0 0 0 3px rgba(49, 94, 251, 0.1);
+  border-color: var(--color-primary);
+
+  box-shadow:
+    0 0 0 3px var(--color-primary-soft);
 }
+
+/* --------------------------------
+   Add task
+   -------------------------------- */
 
 .todo-form__submit {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 7px;
 
-  border: 0;
+  min-width: 100px;
+
+  border: 1px solid var(--color-primary);
   border-radius: 9px;
+
   padding: 9px 15px;
 
   background: var(--color-primary);
   color: white;
 
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 650;
+
+  box-shadow: 0 2px 5px rgba(79, 70, 229, 0.16);
 
   transition:
     background var(--transition-fast),
+    border-color var(--transition-fast),
     transform var(--transition-fast),
     box-shadow var(--transition-fast);
 }
 
 .todo-form__submit:hover:not(:disabled) {
+  border-color: var(--color-primary-hover);
   background: var(--color-primary-hover);
-  box-shadow: 0 5px 14px rgba(49, 94, 251, 0.22);
+
+  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.2);
+
   transform: translateY(-1px);
+}
+
+.todo-form__submit:focus-visible {
+  outline: none;
+
+  box-shadow:
+    0 0 0 3px var(--color-primary-soft),
+    0 5px 14px rgba(79, 70, 229, 0.16);
 }
 
 .todo-form__submit:active:not(:disabled) {
@@ -140,7 +200,12 @@
 
 .todo-form__submit:disabled {
   opacity: 0.45;
+  box-shadow: none;
 }
+
+/* --------------------------------
+   Mobile
+   -------------------------------- */
 
 @media (max-width: 680px) {
   .todo-form__footer {
@@ -150,9 +215,20 @@
 
   .todo-form__options {
     flex-wrap: wrap;
+    gap: 12px;
   }
 
   .todo-form__submit {
-    justify-content: center;
+    width: 100%;
+  }
+}
+
+/* --------------------------------
+   Reduced motion
+   -------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .todo-form {
+    animation: none;
   }
 }
